@@ -12,9 +12,10 @@ class _Lab4State extends State<Lab4> {
   int color = 80;
   int count = 0;
   int offcount = 0;
-  List<String> list = ['a', 'b', 'c', 'd'];
+  var _list = ['a', 'b', 'c', 'd'];
   List<int> colorlist = [700, 400, 200, 100];
   double _value = 50.0;
+  String hint = "выбери букву";
 
   @override
   Widget build(BuildContext context) {
@@ -42,28 +43,25 @@ class _Lab4State extends State<Lab4> {
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      TextButton(
-                        style: TextButton.styleFrom(
-                            backgroundColor:
-                                Color.fromARGB(color, 247, 232, 99)),
-                        onPressed: () {
-                          setState(() {
-                            if (isPressed) {
-                              text = "Нажата";
-                              isPressed = false;
-                              color = 200;
-                              count++;
-                            } else {
-                              text = "Отжата";
-                              isPressed = true;
-                              color = 80;
-                              offcount++;
-                            }
-                          });
-                        },
-                        child: Text('Кнопка',
-                            style: TextStyle(color: Colors.black)),
-                      ),
+                      GestureDetector(
+                          onTapDown: (details) {
+                            count++;
+                            setState(() {
+                              text = "зажата";
+                            });
+                          },
+                          onTapUp: (details) {
+                            offcount++;
+                            setState(() {
+                              text = "отжата";
+                            });
+                          },
+                          child: Container(
+                            child: Text("кнопка"),
+                            height: 50,
+                            width: 70,
+                            color: Colors.brown,
+                          )),
                       Text(text),
                       Text("Число нажатий: $count"),
                       Text("Число отжатий: $offcount"),
@@ -72,41 +70,20 @@ class _Lab4State extends State<Lab4> {
                 top: 350,
                 height: 200,
                 width: 200,
-                child: ListView(
-                  children: [
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.amber[colorlist[0]]),
-                      child: Text('${list[0]}'),
-                      onPressed: () {
-                        print({list[0]});
-                      },
-                    ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.amber[colorlist[1]]),
-                      child: Text('${list[1]}'),
-                      onPressed: () {
-                        print({list[1]});
-                      },
-                    ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.amber[colorlist[2]]),
-                      child: Text('${list[2]}'),
-                      onPressed: () {
-                        print({list[2]});
-                      },
-                    ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.amber[colorlist[3]]),
-                      child: Text('${list[3]}'),
-                      onPressed: () {
-                        print({list[3]});
-                      },
-                    ),
-                  ],
+                child: DropdownButton<String>(
+                  hint: Text(hint),
+                  items: <String>['A', 'B', 'C', 'D'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    print(value);
+                    setState(() {
+                      hint = value.toString();
+                    });
+                  },
                 )),
             Positioned(
                 top: 560,
