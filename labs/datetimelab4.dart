@@ -13,14 +13,13 @@ class DateTimeLab4 extends StatelessWidget {
 
 class Page extends StatefulWidget {
   const Page({Key? key, required this.title}) : super(key: key);
-
   final String title;
-
   @override
   State<Page> createState() => _State();
 }
 
 class _State extends State<Page> {
+  String a = "введите";
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
 
@@ -58,28 +57,24 @@ class _State extends State<Page> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text("$selectedDate"),
-            const SizedBox(
-              height: 20.0,
-            ),
-            ElevatedButton(
-              onPressed: () => _selectDate(context),
-              child: const Text('Select date'),
-            ),
-            Text('$selectedTime'),
-            const SizedBox(
-              height: 20.0,
-            ),
-            ElevatedButton(
-              onPressed: () => _selectTime(context),
-              child: const Text('Select time'),
-            ),
-          ],
+          child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+        Text("$selectedDate"),
+        const SizedBox(
+          height: 20.0,
         ),
-      ),
+        ElevatedButton(
+          onPressed: () => _selectDate(context),
+          child: const Text('Select date'),
+        ),
+        Text('$selectedTime'),
+        const SizedBox(
+          height: 20.0,
+        ),
+        ElevatedButton(
+          onPressed: () => _selectTime(context),
+          child: const Text('Select time'),
+        ),
+      ])),
     );
   }
 }

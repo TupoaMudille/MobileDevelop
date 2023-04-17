@@ -1,4 +1,7 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class Lab4 extends StatefulWidget {
   @override
@@ -6,16 +9,18 @@ class Lab4 extends StatefulWidget {
 }
 
 class _Lab4State extends State<Lab4> {
-  int number = 0;
+  double number = 0.toDouble();
   String text = "Отжата";
   bool isPressed = false;
   int color = 80;
   int count = 0;
   int offcount = 0;
   var _list = ['a', 'b', 'c', 'd'];
+  int count_p = 0;
   List<int> colorlist = [700, 400, 200, 100];
   double _value = 50.0;
   String hint = "выбери букву";
+  List<bool> _isSelected = [false, true, false];
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +36,12 @@ class _Lab4State extends State<Lab4> {
         body: Stack(
           children: [
             TextField(
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.allow(RegExp(r'(^\-?\d*\.?\d*)')),
+              ],
               onSubmitted: (num) {
-                number = int.parse(num);
+                number = double.parse(num);
+                print(number);
               },
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
@@ -57,7 +66,11 @@ class _Lab4State extends State<Lab4> {
                             });
                           },
                           child: Container(
-                            child: Text("кнопка"),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "кнопка",
+                              textAlign: TextAlign.center,
+                            ),
                             height: 50,
                             width: 70,
                             color: Colors.brown,
@@ -66,6 +79,23 @@ class _Lab4State extends State<Lab4> {
                       Text("Число нажатий: $count"),
                       Text("Число отжатий: $offcount"),
                     ])),
+            Positioned(
+                top: 100,
+                //height: 200,
+                //width: 200,
+                child: ToggleButtons(
+                  children: <Widget>[
+                    Icon(Icons.bluetooth),
+                    Icon(Icons.wifi),
+                    Icon(Icons.flash_on),
+                  ],
+                  isSelected: _isSelected,
+                  onPressed: (int index) {
+                    setState(() {
+                      _isSelected[index] = !_isSelected[index];
+                    });
+                  },
+                )),
             Positioned(
                 top: 350,
                 height: 200,

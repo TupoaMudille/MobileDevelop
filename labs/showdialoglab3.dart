@@ -57,7 +57,6 @@ class _State extends State<Page> {
                     onPressed: () {
                       setState(() {
                         sum = a + b;
-                        print(sum);
                       });
                     }),
                 FloatingActionButton(
