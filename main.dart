@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
     case '/':
-      return MaterialPageRoute(builder: (context) => App5());
+      return MaterialPageRoute(builder: (context) => TextButton3());
     case '/second':
       return MaterialPageRoute(builder: (context) => SecondScreen());
     default:
