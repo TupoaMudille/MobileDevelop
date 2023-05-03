@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lab1/labs/lab5/11.dart';
 
 class MainScreen extends StatelessWidget {
   final int _index;
