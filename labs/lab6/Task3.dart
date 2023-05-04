@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:lab1/labs/showdialoglab3.dart';
 import 'package:xml/xml.dart' as xml;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class Task4 extends StatefulWidget {
-  const Task4({Key? key}) : super(key: key);
+class Task3 extends StatefulWidget {
+  const Task3({Key? key}) : super(key: key);
 
   @override
-  State<Task4> createState() => _Task4State();
+  State<Task3> createState() => _Task3State();
 }
 
-class _Task4State extends State<Task4> {
+class _Task3State extends State<Task3> {
   List _values = [];
 
   void _xmlData() async {
     final dataList = [];
+    final fullDataList = [];
     var url = Uri.https('cbr-xml-daily.ru', 'daily_utf8.xml');
     var response = await http.get(url);
     var body = utf8.decode(response.bodyBytes);
@@ -24,10 +26,19 @@ class _Task4State extends State<Task4> {
     final valuteNode = valCursNode.findElements('Valute');
 
     for (final valute in valuteNode) {
+      final NumCode = valute.findAllElements('NumCode').first.text;
       final CharCode = valute.findElements('CharCode').first.text;
+      final Nominal = valute.findElements('Nominal').first.text;
       final Value = valute.findElements('Value').first.text;
       final Name = valute.findElements('Name').first.text;
-      dataList.add({'code': CharCode, 'value': Value, 'name': Name});
+
+      dataList.add({
+        'NumCode': NumCode,
+        'code': CharCode,
+        'Nominal': Nominal,
+        'value': Value,
+        'name': Name
+      });
     }
 
     setState(() {
@@ -41,6 +52,19 @@ class _Task4State extends State<Task4> {
     _xmlData();
   }
 
+  void _showMaterialDialog(String text) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(''),
+            content: Text(text),
+            actions: <Widget>[],
+          );
+        });
+  }
+
+  String text = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,12 +83,33 @@ class _Task4State extends State<Task4> {
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemBuilder: (context, index) => Card(
-                child: ListTile(
-                  title: Text(
-                      _values[index]['code'] + ' ' + _values[index]['name']),
-                  subtitle: Text("Курс: ${_values[index]['value']}"),
+                  child: TextButton(
+                onPressed: () {},
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text(_values[index]['code'] +
+                          ' ' +
+                          _values[index]['name']),
+                      subtitle: Text("Курс: ${_values[index]['value']}"),
+                      onTap: () => setState(() {
+                        text = "${_values[index]['code']}" +
+                            '\n' +
+                            "${_values[index]['name']}" +
+                            '\n ' +
+                            "\nNumCode: " +
+                            _values[index]['NumCode'] +
+                            ' ' +
+                            "\nNominal: " +
+                            _values[index]['Nominal'] +
+                            "\n" +
+                            "Курс: ${_values[index]['value']}";
+                        _showMaterialDialog(text);
+                      }),
+                    ),
+                  ],
                 ),
-              ),
+              )),
               itemCount: _values.length,
             )),
           ],
