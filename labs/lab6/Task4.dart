@@ -1,40 +1,52 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:postgres/postgres.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Task6 extends StatefulWidget {
-  const Task6({Key? key}) : super(key: key);
+class Task4 extends StatefulWidget {
+  const Task4({Key? key}) : super(key: key);
 
   @override
-  State<Task6> createState() => _Task6State();
+  State<Task4> createState() => _Task4State();
 }
 
-class _Task6State extends State<Task6> {
+class _Task4State extends State<Task4> {
+  var connection = PostgreSQLConnection("10.0.2.2", 5432, "Mobile",
+      username: "postgres", password: "root");
   late TextEditingController _controller;
   late List<String> _notes = [];
   void _loadNotes() async {
-    var prefs = await SharedPreferences.getInstance();
+    if (connection.isClosed) {
+      await connection.open();
+    }
+    var prefs = await connection.query("SELECT * FROM notes");
+    List<String> notations = [];
+    for (var row in prefs) {
+      notations.add(row[1]);
+    }
     setState(() {
-      _notes = (prefs.getStringList('notes') ?? []);
+      _notes = notations;
     });
   }
 
   void _uploadNotes(String note) async {
     var prefs = await SharedPreferences.getInstance();
     setState(() {
-      _notes = prefs.getStringList('notes') ?? [];
-      _notes.add(note);
-      prefs.setStringList('notes', _notes);
+      connection.query("INSERT INTO notes(note) VALUES (\'" + note + "\')");
+      _loadNotes();
     });
   }
 
   void _removeNotes(String note) async {
     var prefs = await SharedPreferences.getInstance();
     setState(() {
-      _notes = prefs.getStringList('notes') ?? [];
-      if (_notes.isNotEmpty) _notes.remove(note);
-      prefs.setStringList('notes', _notes);
+      connection.query("DELETE FROM notes WHERE notes.note = \'" + note + "\'");
     });
+    _loadNotes();
+  }
+
+  void _anotherInit() async {
+    await connection.open();
   }
 
   @override
@@ -53,38 +65,39 @@ class _Task6State extends State<Task6> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Task6'),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextField(
-                controller: _controller,
+      appBar: AppBar(
+        title: const Text('Task6'),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            TextField(
+              controller: _controller,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  _uploadNotes(_controller.text);
+                },
+                child: Text('Добавить')),
+            SizedBox(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _notes.length,
+                itemBuilder: (context, i) {
+                  return ListTile(
+                    onTap: () {
+                      setState(() {
+                        _removeNotes(_notes[i]);
+                      });
+                    },
+                    title: Text(_notes[i]),
+                  );
+                },
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    _uploadNotes(_controller.text);
-                  },
-                  child: Text('Добавить')),
-              SizedBox(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _notes.length,
-                  itemBuilder: (context, i) {
-                    return ListTile(
-                      onTap: () {
-                        setState(() {
-                          _removeNotes(_notes[i]);
-                        });
-                      },
-                      title: Text(_notes[i]),
-                    );
-                  },
-                ),
-              )
-            ],
-          ),
-        ));
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
